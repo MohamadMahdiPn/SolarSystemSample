@@ -1,9 +1,30 @@
+﻿using Microsoft.EntityFrameworkCore;
+using SolarSystemSample.Data.DatabaseContext;
+using SolarSystemSample.Repositories.Implementations;
+using SolarSystemSample.Repositories.Interfaces;
+using SolarSystemSample.Statics;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+builder.Services.AddScoped<ISolarSystemRepository, SolarSystemRepository>();
+
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+
+
+
+
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -15,6 +36,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.AppendMigrations();
+await app.MigrateAndSeedAsync();
 
 app.UseRouting();
 
